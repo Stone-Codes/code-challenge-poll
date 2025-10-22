@@ -91,6 +91,7 @@ See:
 - OpenAPI Schema for type generation for the frontend in combination wiht for example openapi-fetch client
 - Shadnc forms with superforms / form-snap / zod, helps with validation, but more usefull for larger forms tbh
 - The fetching / mutating of answer should be done similar to the questions page, questions page can serve as an example
+  - Limited to time constraints, but the example in the questions page should be enough to get started
 - When this would be live, we would need a solution for running migrations like alembic, right now just regenerating the db is ok
 - Depending on the needs could also return the question together with the answers instead of two separate requests
 - Content moderation (if needed, depending also on the environment the app is used)
