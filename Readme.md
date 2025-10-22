@@ -95,6 +95,7 @@ See:
 - Depending on the needs could also return the question together with the answers instead of two separate requests
 - Content moderation (if needed, depending also on the environment the app is used)
   - Could use some lightweight AI model for flagging the answers, and then pull a human into the loop for example
+- Error handling for the frontend for example with sentry is missing right now
 
 ### Testing Strategy
 **Tests not implemented due to time constraints**
