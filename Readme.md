@@ -110,3 +110,4 @@ My general testing approach for apps like this:
 - Didnt adjust the navbar much, but it works fine right now
 - Nothing added to the "Home" page
 - Could further reduce duplication with the card layout by creation even more reusable components between question / answer page
+- No Docker setup, could be added later, i personally prefer to run most things locally except services like the DB / redis etc.
