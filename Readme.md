@@ -54,6 +54,7 @@ See:
 **UI/UX**
 - Introduced shadcn-svelte for quick, and easy UI overhaul
 - Added card based layout for questions / answer pages
+- Added toasts for success and error messages
 
 **View/Visist counts**
 - Added a new /visits page that lists all questions with their visit counts ordered by visist counts
