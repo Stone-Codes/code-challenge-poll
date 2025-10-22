@@ -109,3 +109,4 @@ My general testing approach for apps like this:
 ### Minor Notes
 - Didnt adjust the navbar much, but it works fine right now
 - Nothing added to the "Home" page
+- Could further reduce duplication with the card layout by creation even more reusable components between question / answer page
