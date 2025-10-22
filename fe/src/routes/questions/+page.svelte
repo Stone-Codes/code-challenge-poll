@@ -5,14 +5,16 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { Badge } from '$lib/components/ui/badge';
 	import { toast } from 'svelte-sonner';
 	import Loading from './_components/Loading.svelte';
+	import Eye from '$lib/icons/eye.svg';
 
-	let text = '';
+	let text = $state('');
 
 	const questionQuery = createQuery(() => ({
 		queryKey: ['questions'],
-		queryFn: getQuestions,
+		queryFn: () => getQuestions(),
 		onError: (error: Error) => {
 			toast.error(error.message);
 		}
@@ -45,7 +47,7 @@
 
 <div class="container mx-auto space-y-8 py-8">
 	<div class="space-y-2">
-		<h1 class="text-4xl font-bold tracking-tight">Questions</h1>
+		<h1 class="text-4xl font-bold">Questions</h1>
 		<p class="text-lg text-muted-foreground">Ask a question or browse existing ones</p>
 	</div>
 
@@ -55,7 +57,7 @@
 			<Card.Description>Share your question with the community</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+			<form onsubmit={handleSubmit} class="space-y-4">
 				<div class="space-y-2">
 					<Label for="question">Your Question</Label>
 					<Input
@@ -81,7 +83,7 @@
 
 	<div class="space-y-4">
 		<div class="flex items-center justify-between">
-			<h2 class="text-2xl font-semibold tracking-tight">All Questions</h2>
+			<h2 class="text-2xl font-semibold">All Questions</h2>
 			{#if questionQuery.data}
 				<span class="text-sm text-muted-foreground">
 					{questionQuery.data.length}
@@ -116,7 +118,13 @@
 				{#each questionQuery.data as question (question.id)}
 					<Card.Root class="transition-shadow hover:shadow-md">
 						<Card.Header>
-							<Card.Title class="text-xl">{question.text}</Card.Title>
+							<Card.Title class="flex justify-between text-xl"
+								>{question.text}
+								<Badge>
+									<img src={Eye} alt="eye" class="h-4 w-4" />
+									{question.visits}
+								</Badge>
+							</Card.Title>
 							<Card.Description>Question #{question.id}</Card.Description>
 						</Card.Header>
 						<Card.Footer>

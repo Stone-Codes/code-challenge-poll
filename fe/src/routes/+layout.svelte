@@ -1,19 +1,17 @@
 <script lang="ts">
-	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
 	import Header from './Header.svelte';
 	import '../app.css';
 
-	let { children } = $props();
-
-	const queryClient = new QueryClient();
+	let { children, data } = $props();
 </script>
 
 <Toaster />
 <div class="app">
 	<Header />
 
-	<QueryClientProvider client={queryClient}>
+	<QueryClientProvider client={data.queryClient}>
 		<main>
 			{@render children()}
 		</main>
