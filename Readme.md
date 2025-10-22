@@ -33,6 +33,9 @@ After fetching its not reset to an empty string, so it will not refetch properly
 
 - Missing trailing slashes in the links / fetch routes
 
+- The "Answers" link in the navbar is not serving any purpose right now, would just remove it
+- Same with "Home" link, either add some landing page or just remove it
+
 
 ### Backend
 
@@ -51,3 +54,4 @@ for example, models.py, routes.py etc.
 - Show the amount of answers for each question on the questions page next to "Show Answers"
 - Upvotes for answers (maybe also downvotes)
 - OpenAPI Schema for type generation for the frontend in combination wiht for example openapi-fetch client
+- Shadnc forms with superforms / form-snap / zod, helps with validation, but more usefull for larger forms tbh
