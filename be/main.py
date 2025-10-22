@@ -2,22 +2,30 @@ from typing import Annotated, Any, Union
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, SQLModel, Session, create_engine, select
 
+from middleware import setup_cors
+
 app = FastAPI()
+
+setup_cors(app)
+
 
 class Question(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     text: str = Field(index=True)
+
 
 class Answer(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     question_id: int = Field(foreign_key="question.id")
     text: str = Field(index=True)
 
+
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args)
+
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
@@ -30,9 +38,11 @@ def get_session():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
+
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
 
 @app.post("/question/")
 def create_question(question: Question, session: SessionDep) -> Question:

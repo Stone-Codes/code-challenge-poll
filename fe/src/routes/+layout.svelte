@@ -1,16 +1,23 @@
 <script lang="ts">
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+	import { Toaster } from '$lib/components/ui/sonner/index.js';
 	import Header from './Header.svelte';
 	import '../app.css';
 
 	let { children } = $props();
+
+	const queryClient = new QueryClient();
 </script>
 
+<Toaster />
 <div class="app">
 	<Header />
 
-	<main>
-		{@render children()}
-	</main>
+	<QueryClientProvider client={queryClient}>
+		<main>
+			{@render children()}
+		</main>
+	</QueryClientProvider>
 </div>
 
 <style>
@@ -29,23 +36,5 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 </style>
