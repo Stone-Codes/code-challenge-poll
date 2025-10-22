@@ -1,23 +1,26 @@
-from typing import Annotated, Any, Union
+from contextlib import asynccontextmanager
+from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, SQLModel, Session, create_engine, select
+from sqlmodel import SQLModel, Session, create_engine, select
+from sqlalchemy import exists
+
+from models import Answer, Question
 
 from middleware import setup_cors
 
-app = FastAPI()
 
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    create_db_and_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 setup_cors(app)
-
-
-class Question(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    text: str = Field(index=True)
-
-
-class Answer(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    question_id: int = Field(foreign_key="question.id")
-    text: str = Field(index=True)
 
 
 sqlite_file_name = "database.db"
@@ -27,21 +30,12 @@ connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args)
 
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
 def get_session():
     with Session(engine) as session:
         yield session
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
-
-
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
 
 
 @app.post("/question/")
@@ -62,7 +56,7 @@ def read_questions(
     return [*question]
 
 
-@app.get("/question/{question_id}")
+@app.get("/question/{question_id}/")
 def read_question(question_id: int, session: SessionDep) -> Question:
     question = session.get(Question, question_id)
     if not question:
@@ -78,19 +72,32 @@ def create_answer(answer: Answer, session: SessionDep) -> Answer:
     return answer
 
 
-@app.get("/answer/")
-def read_answers(
-    session: SessionDep,
-    offset: int = 0,
-    limit: Annotated[int, Query(le=100)] = 100,
-) -> list[Answer]:
-    answer = session.exec(select(Answer).offset(offset).limit(limit)).all()
-    return [*answer]
-
-
-@app.get("/answer/{answer_id}")
+@app.get("/answer/{answer_id}/")
 def read_answer(answer_id: int, session: SessionDep) -> Answer:
     answer = session.get(Answer, answer_id)
     if not answer:
-        raise HTTPException(status_code=200, detail="answer not found")
+        raise HTTPException(status_code=404, detail="answer not found")
     return answer
+
+
+@app.get("/question/{question_id}/answers/")
+def read_answers_for_question(question_id: int, session: SessionDep) -> list[Answer]:
+    question_exists = session.exec(
+        select(exists(select(Question).where(Question.id == question_id)))
+    ).first()
+
+    if not question_exists:
+        raise HTTPException(status_code=404, detail="question not found")
+
+    answer = session.exec(select(Answer).where(Answer.question_id == question_id)).all()
+    return [*answer]
+
+
+@app.get("/question/{question_id}/visit/")
+def increment_visits(question_id: int, session: SessionDep) -> int:
+    question = session.get(Question, question_id)
+    if not question:
+        raise HTTPException(status_code=404, detail="question not found")
+    question.visits += 1
+    session.commit()
+    return question.visits
