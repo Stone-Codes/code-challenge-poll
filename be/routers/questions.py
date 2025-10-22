@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from sqlalchemy import exists
 
 from db import get_session
-from models import Answer, Question
+from models import Answer, Question, QuestionCreate
 
 
 router = APIRouter()
@@ -15,11 +15,12 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 @router.post("/")
-def create_question(question: Question, session: SessionDep) -> Question:
-    session.add(question)
+def create_question(question_data: QuestionCreate, session: SessionDep) -> Question:
+    db_question = Question(**question_data.model_dump())
+    session.add(db_question)
     session.commit()
-    session.refresh(question)
-    return question
+    session.refresh(db_question)
+    return db_question
 
 
 @router.get("/")

@@ -50,7 +50,7 @@
 		questionLoading = true;
 		questionError = '';
 		try {
-			const res = await fetch(`http://localhost:8000/question/${questionID}`);
+			const res = await fetch(`http://localhost:8000/question/${questionID}/`);
 			if (res.ok) {
 				const question = await res.json();
 				if (!question) {
